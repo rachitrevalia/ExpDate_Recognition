@@ -1,3 +1,21 @@
+"""
+Simple Streamlit app: take a photo of a product, detect the expiry
+date region, read the date, and show the result.
+
+Usage:
+    pip install streamlit
+    streamlit run streamlit_app.py
+
+This opens in your browser. To test on your phone, make sure your
+phone and laptop are on the same WiFi, then open:
+    http://<your-laptop-ip>:8501
+on your phone's browser (find your laptop's IP with `ipconfig` on
+Windows, look for "IPv4 Address"). Note: phone browsers may require
+HTTPS to allow camera access from anything other than localhost --
+if the camera doesn't open on your phone, we'll set up a quick HTTPS
+tunnel (e.g. ngrok) as a next step.
+"""
+
 import cv2
 import numpy as np
 import re
@@ -99,6 +117,7 @@ model, ocr = load_models()
 photo = st.camera_input("Scan a product")
 
 if photo is not None:
+    # Convert the uploaded photo into an OpenCV image
     image = Image.open(photo).convert("RGB")
     img_array = np.array(image)
     img_bgr = cv2.cvtColor(img_array, cv2.COLOR_RGB2BGR)
@@ -106,12 +125,13 @@ if photo is not None:
     if is_blurry(img_bgr):
         st.warning("This photo looks a bit blurry. Try holding steady, "
                    "getting closer, or improving lighting, then take another photo.")
-        st.image(image, caption="Blurry photo", use_container_width=True)
+        st.image(image, caption="Blurry photo")
         st.stop()
 
     with st.spinner("Scanning..."):
         results = model.predict(source=img_bgr, imgsz=800, conf=0.5, verbose=False)
         result = results[0]
+
         candidates = []
         for box in result.boxes:
             cls_id = int(box.cls[0])
@@ -128,6 +148,7 @@ if photo is not None:
             px2 = min(img_w, x2 + pad)
             py2 = min(img_h, y2 + pad)
             crop = img_bgr[py1:py2, px1:px2]
+
             crop_h, crop_w = crop.shape[:2]
             if crop_h > 0 and crop_w > 0:
                 crop = cv2.resize(crop, (crop_w * 2, crop_h * 2), interpolation=cv2.INTER_CUBIC)
@@ -163,7 +184,7 @@ if photo is not None:
                 cv2.rectangle(display_img, (bx1, by1), (bx2, by2), color, 3)
             display_img_rgb = cv2.cvtColor(display_img, cv2.COLOR_BGR2RGB)
 
-            st.image(display_img_rgb, caption="Detected region(s)", use_container_width=True)
+            st.image(display_img_rgb, caption="Detected region(s)")
 
             st.markdown("### Result")
             if date_text and best["parsed"] is not None:
