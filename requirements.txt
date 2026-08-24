@@ -1,0 +1,9 @@
+streamlit==1.62.0
+ultralytics==8.4.48
+ultralytics-thop==2.0.19
+opencv-python-headless==4.10.0.84
+numpy==1.26.4
+pillow==12.1.1
+paddleocr==2.7.3
+paddlepaddle==2.6.2
+protobuf==3.20.3
