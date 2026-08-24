@@ -106,13 +106,12 @@ if photo is not None:
     if is_blurry(img_bgr):
         st.warning("This photo looks a bit blurry. Try holding steady, "
                    "getting closer, or improving lighting, then take another photo.")
-        st.image(image, caption="Blurry photo", width='stretch')
+        st.image(image, caption="Blurry photo", use_container_width=True)
         st.stop()
 
     with st.spinner("Scanning..."):
         results = model.predict(source=img_bgr, imgsz=800, conf=0.5, verbose=False)
         result = results[0]
-
         candidates = []
         for box in result.boxes:
             cls_id = int(box.cls[0])
@@ -129,7 +128,6 @@ if photo is not None:
             px2 = min(img_w, x2 + pad)
             py2 = min(img_h, y2 + pad)
             crop = img_bgr[py1:py2, px1:px2]
-
             crop_h, crop_w = crop.shape[:2]
             if crop_h > 0 and crop_w > 0:
                 crop = cv2.resize(crop, (crop_w * 2, crop_h * 2), interpolation=cv2.INTER_CUBIC)
@@ -165,7 +163,7 @@ if photo is not None:
                 cv2.rectangle(display_img, (bx1, by1), (bx2, by2), color, 3)
             display_img_rgb = cv2.cvtColor(display_img, cv2.COLOR_BGR2RGB)
 
-            st.image(display_img_rgb, caption="Detected region(s)", width='stretch')
+            st.image(display_img_rgb, caption="Detected region(s)", use_container_width=True)
 
             st.markdown("### Result")
             if date_text and best["parsed"] is not None:
