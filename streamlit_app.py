@@ -1,20 +1,3 @@
-"""
-Simple Streamlit app: take a photo of a product, detect the expiry
-date region, read the date, and show the result.
-
-Usage:
-    pip install streamlit
-    streamlit run streamlit_app.py
-
-This opens in your browser. To test on your phone, make sure your
-phone and laptop are on the same WiFi, then open:
-    http://<your-laptop-ip>:8501
-on your phone's browser (find your laptop's IP with `ipconfig` on
-Windows, look for "IPv4 Address"). Note: phone browsers may require
-HTTPS to allow camera access from anything other than localhost --
-if the camera doesn't open on your phone, we'll set up a quick HTTPS
-tunnel (e.g. ngrok) as a next step.
-"""
 
 import cv2
 import numpy as np
